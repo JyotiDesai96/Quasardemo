@@ -1,4 +1,3 @@
-<!-- eslint-disable vue/return-in-computed-property -->
 <template>
 <div class="q-pa-md padding">
     <q-layout view="hHh Lpr lff" class="shadow-2 rounded-borders">
@@ -75,12 +74,16 @@
         <q-page-container>
             <q-page padding>
               <div class="q-pa-md q-gutter-sm row" style="display:inline-flex;">
-                <q-btn class="btn-menu q-mt-md bg-grey-4 text-black"  size="sm" v-for="menu in subMenuList" :key="menu.menu" color="primary"  :label="menu.menu" >
+                <q-btn @click="filterButton(menu.type)"
+                  class="btn-menu q-mt-md bg-grey-4 text-black"  size="sm" v-for="menu in subMenuList" :key="menu.menu" color="primary"  :label="menu.menu" >
                   <q-tooltip class="btn-tooltip bg-accent">{{menu.tooltip}}</q-tooltip>
                 </q-btn>
               </div>
               <div class="row" style="display:inline-flex;">
-                  <q-card class="my-card col-lg-4 col-md-4 col-sm-2 col-xs-2" v-for="user in playListData" :key="user.title" style="margin:10px;">
+                  <q-card class="my-card col-lg-4 col-md-4 col-sm-2 col-xs-2" 
+                    v-for="user in filteredList" 
+                    :key="user.title" 
+                    style="margin:10px;">
                       <q-video :src="user.video" v-if="user.video" />
                       <img :src="require('../assets/' + user.image)" class="card-img" v-else>
 
@@ -144,7 +147,7 @@ const menuList = [{
 ]
 const playList = [
   {
-      title: 'Mind blowing music instrumental song by AR Rehman',
+      title: 'Beautiful Nature Photography',
       icon: '',
       type:'nature',
       image: 'mountains (2).jpg',
@@ -154,23 +157,24 @@ const playList = [
       createdBy: '4 years ago'
   },
   {
-      title: 'Mind blowing music instrumental song by AR Rehman',
+      title: 'Everyone needs nature | National Trust',
       icon: '',
       image: 'parallax1.jpg',
+      type:'nature',
       video: '',
       views: '3.4M views',
       channelname: 'Music Meditation',
       createdBy: '4 years ago'
   },
   {
-      title: 'Mind blowing music instrumental song by AR Rehman',
+      title: 'Connecting with Mother Earth: Exploring the Power of Nature ',
       icon: '',
       image: 'mountains (2).jpg',
       type:'nature',
       video: '',
-      views: '3.4M views',
+      views: '211k views',
       channelname: 'Music Meditation',
-      createdBy: '4 years ago'
+      createdBy: '11 days ago'
   },
   {
       title: 'Prank On Auto Rickshaw Drivers | Part 10 | Prakash Peswani Prank |',
@@ -210,7 +214,6 @@ const playList = [
       channelname: 'Tips Official',
       createdBy: '1 day ago'
   },
-
 ]
 const subMenus = [
   {
@@ -244,7 +247,8 @@ const subMenus = [
   },
    {
     menu:'new to you',
-    tooltip:'new to you'
+    tooltip:'new to you',
+    type:'',
   },
   {
     menu:'Bollywood music',
@@ -253,47 +257,61 @@ const subMenus = [
   },
   {
     menu:'recently uploaded',
-    tooltip:'recently uploaded'
+    tooltip:'recently uploaded',
+    type:'',
   },
   {
     menu:'watched',
-    tooltip:'watched'
+    tooltip:'watched',
+    type:'',
   },
   {
     menu:'shorts',
-    tooltip:'shorts'
+    tooltip:'shorts',
+    type:'',
   },
   {
     menu:'subscriptions',
-    tooltip:'subscriptions'
+    tooltip:'subscriptions',
+    type:'',
   },
 ]
 export default {
-    components: {
+  created(){
 
-    },
-    data() {
-        return {
-          drawer: ref(false),
-          menuList,
-          playListData: playList,
-          miniState: ref(true),
-          global_search:ref(''),
-          subMenuList:subMenus,
-        }
-    },
-    computed: {
-      // filterData(menu){
-      //    let filteredUsers = this.playListData.filter((data) => {
-      //       return data.type === menu;
-      //   });
-      //   this.playListData = filteredUsers;
-      //   console.log(filteredUsers);
-      // }
-    },
-    methods:{
+  },
+  components: {
+  },
+  data() {
+      return {
+        drawer: ref(false),
+        menuList,
+        playListData: playList,
+        miniState: ref(true),
+        global_search:ref(''),
+        subMenuList:subMenus,
+      }
+  },
+  computed: {
+    filteredList() {
+      return this.playListData.filter( list => list.title.toLowerCase().includes(this.global_search))
+    }
+  },
+  methods:{
+    filterButton(menu){
+      if(menu == "all"){
+        this.playListData = playList;
+      }else{
+        let filteredUsers = this.playListData.filter((data) => {
+          console.log(menu,data.type);
+          return data.type === menu;         
+        });
+        this.playListData = filteredUsers;
+        console.log(filteredUsers);
+      }
       
     }
+  }
 }
 </script>
 
@@ -301,16 +319,13 @@ export default {
 .padding {
     padding: 0px 0px !important;
 }
-
 .q-layout__section--marginal {
     color: black;
 }
-
 .my-card {
     width: 100%;
     max-width: 295px;
 }
-
 .box-title {
     font-size: 1.rem;
     line-height: 1.2rem;
@@ -324,7 +339,6 @@ export default {
     margin-bottom: 10px;
     text-transform: capitalize !important;
 }
-
 .box-subtitle {
     margin-right: -.1em;
     padding-right: 0.1em;
@@ -339,7 +353,6 @@ export default {
     margin: 0px 5px;
     text-transform: capitalize !important;
 }
-
 .card-img {
     height: fit-content;
     width: -webkit-fill-available;
